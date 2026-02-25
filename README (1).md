@@ -182,7 +182,7 @@ The `populate_db` management command creates:
 
 ## Deployment Status
 
-**Live URL:** https://ds613u232p80.drytis.ai/
+**Live URL:** https://bakery-shop-4ckn.onrender.com/
 
 The application is currently running and accessible through the Caddy reverse proxy.
 
