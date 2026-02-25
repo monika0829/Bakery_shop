@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% load shop_filters %}
+{% block title %}Checkout - Goodluck Bakery{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <section class="bg-light py-4">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cart' %}">Cart</a></li>
+                    <li class="breadcrumb-item active">Checkout</li>
+                </ol>
+            </nav>
+            <h1 class="display-4 fw-bold mt-2">Checkout</h1>
+        </div>
+    </section>
+
+    <!-- Checkout Content -->
+    <section class="py-5">
+        <div class="container">
+            <form method="post" id="checkout-form">
+                {% csrf_token %}
+                <div class="row g-4">
+                    <!-- Shipping Information -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fas fa-shipping-fast me-2"></i>Shipping Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="shipping_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="shipping_name" id="shipping_name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="shipping_email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" name="shipping_email" id="shipping_email" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="shipping_phone" class="form-label">Phone <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" name="shipping_phone" id="shipping_phone" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="shipping_address" class="form-label">Street Address <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" name="shipping_address" id="shipping_address" rows="2" required></textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="shipping_city" class="form-label">City <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="shipping_city" id="shipping_city" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="shipping_state" class="form-label">State <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="shipping_state" id="shipping_state" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="shipping_postal_code" class="form-label">Postal Code <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="shipping_postal_code" id="shipping_postal_code" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Method -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fas fa-truck me-2"></i>Shipping Method</h5>
+                            </div>
+                            <div class="card-body">
+                                {% for choice in form.shipping_method %}
+                                    <div class="form-check mb-2">
+                                        {{ choice.tag }}
+                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                            {{ choice.choice_label }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Your payment information is secure and encrypted.
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cardholder-name" class="form-label">Cardholder Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="cardholder-name" name="cardholder_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="card-element" class="form-label">Card Details <span class="text-danger">*</span></label>
+                                    <div id="card-element" class="form-control p-3" style="min-height: 45px;">
+                                        <!-- Stripe Element will be inserted here -->
+                                    </div>
+                                    <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                                </div>
+                                <div class="d-flex align-items-center text-muted small">
+                                    <i class="fab fa-cc-visa fa-2x me-2"></i>
+                                    <i class="fab fa-cc-mastercard fa-2x me-2"></i>
+                                    <i class="fab fa-cc-amex fa-2x me-2"></i>
+                                    <i class="fas fa-lock me-2"></i>
+                                    Secure SSL Payment
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Notes -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Order Notes (Optional)</h5>
+                            </div>
+                            <div class="card-body">
+                                <textarea class="form-control" name="order_notes" rows="3" placeholder="Special instructions or delivery notes..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Order Summary</h5>
+                                <div class="mb-3">
+                                    <h6>Items in your order</h6>
+                                    {% for item in cart_items %}
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                                            <span>${{ item.product.get_current_price|multiply:item.quantity }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal</span>
+                                    <span id="subtotal">{{ subtotal|inr_price }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping</span>
+                                    <span id="shipping-cost">$5.99</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax (8%)</span>
+                                    <span id="tax">${{ subtotal|floatformat:2|multiply:0.08 }}</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-4">
+                                    <span class="fw-bold fs-5">Total</span>
+                                    <span class="fw-bold fs-5" id="total">${{ subtotal|floatformat:2|add:5.99 }}</span>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                    <i class="fas fa-lock me-2"></i>Place Order
+                                </button>
+                                <p class="text-center text-muted small mt-3 mb-0">
+                                    By placing your order, you agree to our Terms of Service and Privacy Policy.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Stripe will be initialized here with the publishable key
+        const stripePublicKey = '{{ stripe_public_key|escapejs }}';
+    </script>
+{% endblock %}

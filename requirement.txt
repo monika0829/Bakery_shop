@@ -1,0 +1,8 @@
+Django
+python-dotenv
+django-crispy-forms
+crispy-bootstrap5
+stripe
+gunicorn
+whitenoise
+Pillow

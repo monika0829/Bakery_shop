@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% load shop_filters %}
+{% block title %}My Profile - Goodluck Bakery{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <section class="bg-light py-4">
+        <div class="container">
+            <h1 class="display-4 fw-bold">My Profile</h1>
+        </div>
+    </section>
+
+    <!-- Profile Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Profile Menu -->
+                <div class="col-lg-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                                <h5 class="mt-2 mb-0">{{ user.get_full_name|default:user.username }}</h5>
+                                <p class="text-muted small">{{ user.email }}</p>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'profile' %}" class="list-group-item list-group-item-action active">
+                                    <i class="fas fa-user me-2"></i>Profile
+                                </a>
+                                <a href="{% url 'user_orders' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-shopping-bag me-2"></i>My Orders
+                                </a>
+                                <a href="{% url 'cart' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-shopping-cart me-2"></i>My Cart
+                                </a>
+                                <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Form -->
+                <div class="col-lg-9">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Profile</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" name="first_name" id="first_name" value="{{ form.first_name.value|default:user.first_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" name="last_name" id="last_name" value="{{ form.last_name.value|default:user.last_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="email" id="email" value="{{ form.email.value|default:user.email }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone</label>
+                                        <input type="tel" class="form-control" name="phone" id="phone" value="{{ form.phone.value|default:user.phone|default:'' }}">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea class="form-control" name="address" id="address" rows="2">{{ form.address.value|default:user.address|default:'' }}</textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="city" class="form-label">City</label>
+                                        <input type="text" class="form-control" name="city" id="city" value="{{ form.city.value|default:user.city|default:'' }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="state" class="form-label">State</label>
+                                        <input type="text" class="form-control" name="state" id="state" value="{{ form.state.value|default:user.state|default:'' }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="postal_code" class="form-label">Postal Code</label>
+                                        <input type="text" class="form-control" name="postal_code" id="postal_code" value="{{ form.postal_code.value|default:user.postal_code|default:'' }}">
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    {% if recent_orders %}
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Recent Orders</h5>
+                                <a href="{% url 'user_orders' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="p-3">Order #</th>
+                                                <th class="p-3">Date</th>
+                                                <th class="p-3">Total</th>
+                                                <th class="p-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in recent_orders %}
+                                                <tr>
+                                                    <td class="p-3"><a href="{% url 'order_detail' order.order_number %}" class="text-decoration-none">{{ order.order_number }}</a></td>
+                                                    <td class="p-3">{{ order.created_at|date:"M d, Y" }}</td>
+                                                    <td class="p-3">${{ order.total }}</td>
+                                                    <td class="p-3"><span class="badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
